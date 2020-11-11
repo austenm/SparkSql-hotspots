@@ -14,15 +14,13 @@ object SparkSQLExample {
     val spark = SparkSession
       .builder()
       .appName("CSE512-Phase2")
-      .config("spark.some.config.option", "some-value")
-      // TODO: Comment out master parameter when ready to submit
-      .master("local[*]")
+      .config("spark.some.config.option", "some-value").master("local[*]")
       .getOrCreate()
 
-    paramsParser(spark, args)
-
-    spark.stop()
+     paramsParser(spark, args)
+     spark.stop()
   }
+
 
   private def paramsParser(spark: SparkSession, args: Array[String]): Unit =
   {
@@ -90,3 +88,4 @@ object SparkSQLExample {
   }
 
 }
+
