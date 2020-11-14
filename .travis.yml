@@ -13,3 +13,15 @@ before_install:
 branches:
   only:
     - main
+    - /^release-.*$/
+before_deploy:
+  - sbt ++$TRAVIS_SCALA_VERSION assembly
+deploy:
+  provider: releases
+  api_key:
+    secure: "iufNKWdGf9hcuFduRXLoZBCM1lKpixAJ5Qlf3VxCCwvtwIOnd+ZLMD0giiM6rcRCdNsN/ltj9QKIhoMl40jeR+X0Q/G/4kvSeqMpsSv1O+bzUMv2xmuoYEUziGIwF0FWpV9K7sh5YWEe9pa5rLqfI2FVbqbUBOZr5oGQ7sYLguSI64SMPrBL2t4yS3jeLVEYPEmOEcpiwsIuXEKlmiUzJbImGlE47Nuw6y+Dtfm4ftmecGu1pp2h9gJ5uSr3+WnoNwovG22czcTsLDnnM0nItA1CwiI/sDaDpaLKtUOma7kAabPGsjdOIs5Esc5Z0dlTIdW20FV9KoZ2Kkqav1xcc2EzJI29SmsCViyTUR5xDa0TLe72lPK6+1HfffSKQOeuwzv3G+Ikghl+HUasFkJ8jXYJQqVSa/MsK3W7ZFKJlcrl696reaBPK6InsUB2i8VhWM7ZVjQyQ7qy/BvYfQVRdPbDBRUgz9Fn5PY1LRN6FrCZFnOWPh51FKsycyWmTufwnrl+GoCZJ1L+nG0gbJyPEoo8v1k7SXBG2+Jcq92kajp1EMi+ctt3U91CqHRKIdxALf1uM30F2UQYu44RHTdSt9GfPSg3fJwG32fQ5g58bzSI3ujo6AxCWlgc194bL8JmcfGOuZyVhRixoo5az44HfMbLCH/uLduF/CZ5xf9tSJs="
+  file_glob: true
+  file: target/scala-2.11/**/*.jar
+  skip_cleanup: true
+  on:
+    tags: true
