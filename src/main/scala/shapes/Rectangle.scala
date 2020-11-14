@@ -23,17 +23,26 @@ object Rectangle {
   def fromString(rectangleString: String): Rectangle = {
       val rectangleStrArr = rectangleString.split(",")
       if (rectangleStrArr.length != 4) {
-      throw new IllegalArgumentException("Rectangle string must contains four points")
+      throw new IllegalArgumentException("Rectangle string must contain four points")
       }
       val xpoints = List(rectangleStrArr(0).trim().toDouble, rectangleStrArr(2).trim().toDouble).sorted
       val ypoints = List(rectangleStrArr(1).trim().toDouble, rectangleStrArr(3).trim().toDouble).sorted
-      val minpoint = new Point(xpoints(0), ypoints(0))
-      val maxpoint = new Point(xpoints(1), ypoints(1))
-      apply(minpoint, maxpoint)
+      apply(xpoints(0), ypoints(0),xpoints(1),ypoints(1))
   }
-
-
-  def apply(x: Point, y: Point): Rectangle = {
-    new Rectangle(x,y)
+  /**
+   * Factory-method for Rectangle
+   *
+   * Note: A rectangle where the first point is the min of x and y co-ordinates and
+   * the second point is represented by the max of each x and y co-ordinates 
+   *
+   * @param xmin min x co-ordinate position
+   * @param ymin min y co-ordinate position
+   * @param xmax max x co-ordinate position
+   * @param ymax max y co-ordinate position
+   * @return Rectangle with points
+   */
+  def apply (xmin:Double,ymin:Double,xmax:Double,ymax:Double): Rectangle =
+  {
+    new Rectangle(Point(xmin,ymin),Point(xmax,ymax))
   }
 }

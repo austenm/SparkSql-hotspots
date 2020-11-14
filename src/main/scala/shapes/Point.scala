@@ -1,6 +1,6 @@
 package shapes
 
-class Point  (val x: Double, val y: Double) {
+class Point private(val x: Double, val y: Double) {
 
 }
 /**
