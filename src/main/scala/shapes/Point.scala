@@ -1,7 +1,29 @@
 package shapes
 
+/**
+ * Represents a point in two-dimensional space
+ * @param x x-coordinate
+ * @param y y-coordinate
+ */
 class Point private(val x: Double, val y: Double) {
 
+  // Auto-generated
+  def canEqual(other: Any): Boolean = other.isInstanceOf[Point]
+
+  // Auto-generated
+  override def equals(other: Any): Boolean = other match {
+    case that: Point =>
+      (that canEqual this) &&
+        x == that.x &&
+        y == that.y
+    case _ => false
+  }
+
+  // Auto-generated
+  override def hashCode(): Int = {
+    val state = Seq(x, y)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  }
 }
 /**
  * Companion object used for utility functions
@@ -22,9 +44,9 @@ object Point {
     }
     val xval = pointsArr(0).trim().toDouble
     val yval = pointsArr(1).trim().toDouble
-    new Point(xval, yval)
-
+    Point(xval, yval)
   }
+
   def apply(x: Double, y: Double): Point = {
      new Point(x,y)
   }
