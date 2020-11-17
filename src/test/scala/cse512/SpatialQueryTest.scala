@@ -2,7 +2,7 @@ package cse512
 
 import org.apache.spark.sql.SparkSession
 import org.scalatest.FunSuite
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.specs2.matcher.ShouldMatchers.thisValue
 
 object SpatialQueryTest {
   val spark = SparkSession.builder
@@ -54,5 +54,55 @@ class SpatialQueryTest extends FunSuite {
       "src/test/resources/range_join_query_rectangles.csv"
     )
     count shouldEqual 4
+  }
+
+  test("distance query where point is within range") {
+    val count = SpatialQuery.runDistanceQuery(
+      SpatialQueryTest.spark,
+      "src/test/resources/distance_query.csv",
+      "1.0,3.0",
+      "1"
+    )
+    count shouldEqual 1
+  }
+
+  test("distance query where point is not within range") {
+    val count = SpatialQuery.runDistanceQuery(
+      SpatialQueryTest.spark,
+      "src/test/resources/distance_query.csv",
+      "1.0,3.0",
+      "0.1"
+    )
+    count shouldEqual 0
+  }
+
+  test("distance join query where all points are in range once") {
+    val count = SpatialQuery.runDistanceJoinQuery(
+      SpatialQueryTest.spark,
+      "src/test/resources/distance_join_query.csv",
+      "src/test/resources/distance_join_query_within_one_unit.csv",
+      "1"
+    )
+    count shouldEqual 2
+  }
+
+  test("distance join query where all points are in range twice") {
+    val count = SpatialQuery.runDistanceJoinQuery(
+      SpatialQueryTest.spark,
+      "src/test/resources/distance_join_query.csv",
+      "src/test/resources/distance_join_query_within_one_unit.csv",
+      "100"
+    )
+    count shouldEqual 4
+  }
+
+  test("distance join query where all points are not in range") {
+    val count = SpatialQuery.runDistanceJoinQuery(
+      SpatialQueryTest.spark,
+      "src/test/resources/distance_join_query.csv",
+      "src/test/resources/distance_join_query_within_one_unit.csv",
+      "0.1"
+    )
+    count shouldEqual 0
   }
 }
