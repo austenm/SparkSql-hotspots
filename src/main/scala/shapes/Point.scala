@@ -2,6 +2,10 @@ package shapes
 
 class Point private(val x: Double, val y: Double) {
 
+  def within(point: Point, rangeAllowed: Double): Boolean = {
+    math.sqrt(math.pow((x - point.x), 2) + math.pow((y - point.y), 2)) <= rangeAllowed
+  }
+
 }
 /**
  * Companion object used for utility functions
