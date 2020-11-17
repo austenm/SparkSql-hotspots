@@ -7,6 +7,12 @@ package shapes
  */
 class Point private(val x: Double, val y: Double) {
 
+
+  def within(point: Point, rangeAllowed: Double): Boolean = {
+    math.sqrt(math.pow(x - point.x, 2) + math.pow(y - point.y, 2)) <= rangeAllowed
+  }
+
+
   // Auto-generated
   def canEqual(other: Any): Boolean = other.isInstanceOf[Point]
 
@@ -24,6 +30,7 @@ class Point private(val x: Double, val y: Double) {
     val state = Seq(x, y)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
+
 }
 /**
  * Companion object used for utility functions

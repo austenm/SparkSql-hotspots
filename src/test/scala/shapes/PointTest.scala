@@ -39,4 +39,16 @@ class PointTest extends FunSuite {
     point.x shouldEqual 10
     point.y shouldEqual 20
   }
+
+  test("point is within") {
+    val point1 = Point(10, 20)
+    val point2 = Point(20, 20)
+    assert(point1.within(point2, 10))
+  }
+
+  test("point is not within") {
+    val point1 = Point(10, 20)
+    val point2 = Point(20, 20)
+    assert(!point1.within(point2, 5))
+  }
 }
