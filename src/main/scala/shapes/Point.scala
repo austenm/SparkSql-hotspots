@@ -7,11 +7,16 @@ package shapes
  */
 class Point private(val x: Double, val y: Double) {
 
-
+  /**
+   * Given a point and a range, returns whether the distance between the point and the given point is within the range
+   * @param point other point use to determine distance between
+   * @param rangeAllowed maximum allowed range for distance between the points
+   * @return true, if the distance between the current point and the given point are less than or equal to the
+   *         given range; false, if otherwise
+   */
   def within(point: Point, rangeAllowed: Double): Boolean = {
     math.sqrt(math.pow(x - point.x, 2) + math.pow(y - point.y, 2)) <= rangeAllowed
   }
-
 
   // Auto-generated
   def canEqual(other: Any): Boolean = other.isInstanceOf[Point]
