@@ -17,11 +17,8 @@ lazy val root = (project in file(".")).
   )
 
 libraryDependencies ++= Seq(
-  // TODO: Switch compile libraries to provided when ready to submit
-  //  "org.apache.spark" %% "spark-core" % "2.2.0" % "provided",
-  //  "org.apache.spark" %% "spark-sql" % "2.2.0" % "provided",
-  "org.apache.spark" %% "spark-core" % "2.2.0" % "compile",
-  "org.apache.spark" %% "spark-sql" % "2.2.0" % "compile",
+  "org.apache.spark" %% "spark-core" % "2.2.0" % "provided",
+  "org.apache.spark" %% "spark-sql" % "2.2.0" % "provided",
   "org.apache.spark" %% "spark-core" % "2.2.0" % "test",
   "org.apache.spark" %% "spark-sql" % "2.2.0" % "test",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test",

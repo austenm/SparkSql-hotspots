@@ -15,8 +15,6 @@ object SparkSQLExample {
       .builder()
       .appName("CSE512-Phase2")
       .config("spark.some.config.option", "some-value")
-      // TODO: Comment out master parameter when ready to submit
-      .master("local[*]")
       .getOrCreate()
 
     paramsParser(spark, args)
