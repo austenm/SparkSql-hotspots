@@ -5,7 +5,7 @@ package shapes
  * @param minpoint {@type Point} represents the minimum x and y coordinates of the rectangle
  * @param maxpoint {@type Point} represents the maximum x and y coordinates of the rectangle
  */
-class Rectangle private (val minpoint: Point, val maxpoint: Point)  {
+class Rectangle private(val minpoint: Point, val maxpoint: Point)  {
 
   /**
    * Given a Point, determines whether the Point is contained within the rectangle
@@ -59,7 +59,7 @@ object Rectangle {
    * Factory-method for Rectangle
    *
    * Note: A rectangle where the first point is the min of x and y co-ordinates and
-   * the second point is represented by the max of each x and y co-ordinates 
+   * the second point is represented by the max of each x and y co-ordinates
    *
    * @param xmin min x co-ordinate position
    * @param ymin min y co-ordinate position
