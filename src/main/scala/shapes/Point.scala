@@ -19,7 +19,7 @@ class Point private(val x: Double, val y: Double) {
   }
 
   // Auto-generated
-  def canEqual(other: Any): Boolean = other.isInstanceOf[Point3D]
+  def canEqual(other: Any): Boolean = other.isInstanceOf[Point]
 
   // Auto-generated
   override def equals(other: Any): Boolean = other match {
