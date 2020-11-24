@@ -5,7 +5,8 @@ package shapes
  * @param minpoint {@type Point3D} represents the minimum x, y and z coordinates of the rectangle
  * @param maxpoint {@type Point3D} represents the maximum x, y and z coordinates of the rectangle
  */
-class Rectangle3D private(val minpoint: Point3D, val maxpoint: Point3D)  {
+@SerialVersionUID(100L)
+class Rectangle3D private(val minpoint: Point3D, val maxpoint: Point3D) extends Serializable {
 
   /**
    * Given a Point3D, determines whether the Point3D is contained within the rectangle3D
