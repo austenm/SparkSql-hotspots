@@ -13,8 +13,8 @@ class Rectangle3D private(val minpoint: Point3D, val maxpoint: Point3D)  {
    * @return true - if the point is contianed within the rectangle; false - if otherwise
    */
   def contains(point: Point3D): Boolean = {
-   point.x >= minpoint.x && point.x <= maxpoint.x && point.y >= minpoint.y && point.y <= maxpoint.y
-    && point.z >= minpoint.z && point.z <= maxpoint.z
+   point.x >= minpoint.x && point.x <= maxpoint.x && point.y >= minpoint.y && point.y <= maxpoint.y &&
+     point.z >= minpoint.z && point.z <= maxpoint.z
   }
 
   // auto-generated
