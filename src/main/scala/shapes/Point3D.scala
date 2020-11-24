@@ -34,7 +34,7 @@ class Point3D private(val x: Double, val y: Double, val z: Double) {
   // Does this section need to be edited?
   // Auto-generated
   override def hashCode(): Int = {
-    val state = Seq(x, y)
+    val state = Seq(x, y, z)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 
@@ -44,12 +44,12 @@ class Point3D private(val x: Double, val y: Double, val z: Double) {
  */
 object Point3D {
   /**
-   * Converts to a point
+   * Converts to a Point3D
    * @param pointsString co-ordinate string
-   * @return a object of point with x and y coordinates
+   * @return a object of point with x, y and z coordinates
    *
    * @throws IllegalArgumentException
-   *  - does not contain two values separated by the regex
+   *  - does not contain three values separated by the regex
    */
   def fromString(pointsString: String): Point3D = {
     val pointsArr = pointsString.split(",")
@@ -58,8 +58,8 @@ object Point3D {
     }
     val xval = pointsArr(0).trim().toDouble
     val yval = pointsArr(1).trim().toDouble
-    val zval = pointsArr.(2).trim().toDouble
-    Point3D(xval, yval)
+    val zval = pointsArr(2).trim().toDouble
+    Point3D(xval, yval, zval)
   }
 
   def apply(x: Double, y: Double, z: Double): Point3D = {

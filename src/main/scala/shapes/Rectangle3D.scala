@@ -1,15 +1,15 @@
 package shapes
 
 /**
- * Represents a rectangle in two-dimensional space
- * @param minpoint {@type Point} represents the minimum x and y coordinates of the rectangle
- * @param maxpoint {@type Point} represents the maximum x and y coordinates of the rectangle
+ * Represents a rectangle in three-dimensional space
+ * @param minpoint {@type Point3D} represents the minimum x, y and z coordinates of the rectangle
+ * @param maxpoint {@type Point3D} represents the maximum x, y and z coordinates of the rectangle
  */
 class Rectangle3D private(val minpoint: Point3D, val maxpoint: Point3D)  {
 
   /**
-   * Given a Point, determines whether the Point is contained within the rectangle
-   * @param point point to test
+   * Given a Point3D, determines whether the Point3D is contained within the rectangle3D
+   * @param point3D point to test
    * @return true - if the point is contianed within the rectangle; false - if otherwise
    */
   def contains(point: Point3D): Boolean = {
@@ -29,7 +29,6 @@ class Rectangle3D private(val minpoint: Point3D, val maxpoint: Point3D)  {
     case _ => false
   }
 
-  // Does this section need to be edited?
   // auto-generated
   override def hashCode(): Int = {
     val state = Seq(minpoint, maxpoint)
@@ -44,9 +43,9 @@ object Rectangle3D {
   /**
    * Creates an object rectangle with min and max coordinates
    * @param rectangle3DString
-   * @return Rectangle object
+   * @return Rectangle3D object
    * @throws IllegalArgumentException
-   *  - Need to contain the four coordinates of a rectangle
+   *  - Need to contain the six coordinates of a rectangle in three dimensions
    */
   def fromString(rectangle3DString: String): Rectangle3D = {
       val rectangleStrArr = rectangle3DString.split(",")
@@ -59,10 +58,10 @@ object Rectangle3D {
       apply(xpoints(0), ypoints(0), zpoints(0), xpoints(1), ypoints(1), zpoints(1))
   }
   /**
-   * Factory-method for Rectangle
+   * Factory-method for Rectangle3D
    *
-   * Note: A rectangle where the first point is the min of x and y co-ordinates and
-   * the second point is represented by the max of each x and y co-ordinates
+   * Note: A rectangle where the first point is the min of x, y and z co-ordinates and
+   * the second point is represented by the max of each x, y and z co-ordinates
    *
    * @param xmin min x co-ordinate position
    * @param ymin min y co-ordinate position
@@ -70,7 +69,7 @@ object Rectangle3D {
    * @param xmax max x co-ordinate position
    * @param ymax max y co-ordinate position
    * @param zmax max z co-ordinate position
-   * @return Rectangle with points
+   * @return Rectangle3D with points
    */
   def apply (xmin:Double, ymin:Double, xmax:Double, ymax:Double, zmin:Double, zmax:Double): Rectangle3D =
   {
