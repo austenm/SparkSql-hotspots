@@ -5,7 +5,7 @@ package shapes
  * @param minpoint {@type Point} represents the minimum x and y coordinates of the rectangle
  * @param maxpoint {@type Point} represents the maximum x and y coordinates of the rectangle
  */
-class Rectangle private (val minpoint: Point, val maxpoint: Point)  {
+class Rectangle2D private(val minpoint: Point, val maxpoint: Point)  {
 
   /**
    * Given a Point, determines whether the Point is contained within the rectangle
@@ -17,11 +17,11 @@ class Rectangle private (val minpoint: Point, val maxpoint: Point)  {
   }
 
   // auto-generated
-  def canEqual(other: Any): Boolean = other.isInstanceOf[Rectangle]
+  def canEqual(other: Any): Boolean = other.isInstanceOf[Rectangle3D]
 
   // auto-generated
   override def equals(other: Any): Boolean = other match {
-    case that: Rectangle =>
+    case that: Rectangle3D =>
       (that canEqual this) &&
         minpoint == that.minpoint &&
         maxpoint == that.maxpoint
@@ -38,7 +38,7 @@ class Rectangle private (val minpoint: Point, val maxpoint: Point)  {
 /**
  * Companion object used for utility functions
  */
-object Rectangle {
+object Rectangle2D {
   /**
    * Creates an object rectangle with min and max coordinates
    * @param rectangleString
@@ -46,7 +46,7 @@ object Rectangle {
    * @throws IllegalArgumentException
    *  - Need to contain the four coordinates of a rectangle
    */
-  def fromString(rectangleString: String): Rectangle = {
+  def fromString(rectangleString: String): Rectangle3D = {
       val rectangleStrArr = rectangleString.split(",")
       if (rectangleStrArr.length != 4) {
         throw new IllegalArgumentException("Rectangle string must contain four points")
@@ -59,7 +59,7 @@ object Rectangle {
    * Factory-method for Rectangle
    *
    * Note: A rectangle where the first point is the min of x and y co-ordinates and
-   * the second point is represented by the max of each x and y co-ordinates 
+   * the second point is represented by the max of each x and y co-ordinates
    *
    * @param xmin min x co-ordinate position
    * @param ymin min y co-ordinate position
@@ -67,8 +67,8 @@ object Rectangle {
    * @param ymax max y co-ordinate position
    * @return Rectangle with points
    */
-  def apply (xmin:Double, ymin:Double, xmax:Double, ymax:Double): Rectangle =
+  def apply (xmin:Double, ymin:Double, xmax:Double, ymax:Double): Rectangle3D =
   {
-    new Rectangle(Point(xmin,ymin), Point(xmax,ymax))
+    new Rectangle3D(Point(xmin,ymin), Point(xmax,ymax))
   }
 }
