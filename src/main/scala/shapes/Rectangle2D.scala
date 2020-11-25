@@ -33,6 +33,9 @@ class Rectangle2D private(val minpoint: Point2D, val maxpoint: Point2D)  {
     val state = Seq(minpoint, maxpoint)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
+
+  // Auto-generated
+  override def toString = s"Rectangle2D($minpoint, $maxpoint)"
 }
 
 /**

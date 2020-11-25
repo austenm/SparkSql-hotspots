@@ -14,8 +14,12 @@ class Rectangle3D private(val minpoint: Point3D, val maxpoint: Point3D) extends 
    * @return true - if the point is contained within the rectangle; false - if otherwise
    */
   def contains(point: Point3D): Boolean = {
-   point.x >= minpoint.x && point.x <= maxpoint.x && point.y >= minpoint.y && point.y <= maxpoint.y &&
-     point.z >= minpoint.z && point.z <= maxpoint.z
+     point.x >= minpoint.x &&
+     point.x <= maxpoint.x &&
+     point.y >= minpoint.y &&
+     point.y <= maxpoint.y &&
+     point.z >= minpoint.z &&
+     point.z <= maxpoint.z
   }
 
   // auto-generated
@@ -35,6 +39,9 @@ class Rectangle3D private(val minpoint: Point3D, val maxpoint: Point3D) extends 
     val state = Seq(minpoint, maxpoint)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
+
+  // Auto-generated
+  override def toString = s"Rectangle3D($minpoint, $maxpoint)"
 }
 
 /**
@@ -64,16 +71,20 @@ object Rectangle3D {
    * Note: A rectangle where the first point is the min of x, y and z co-ordinates and
    * the second point is represented by the max of each x, y and z co-ordinates
    *
-   * @param xmin min x co-ordinate position
-   * @param ymin min y co-ordinate position
-   * @param zmin min z co-ordinate position
-   * @param xmax max x co-ordinate position
-   * @param ymax max y co-ordinate position
-   * @param zmax max z co-ordinate position
+   * @param xMin min x co-ordinate position
+   * @param yMin min y co-ordinate position
+   * @param zMin min z co-ordinate position
+   * @param xMax max x co-ordinate position
+   * @param yMax max y co-ordinate position
+   * @param zMax max z co-ordinate position
    * @return Rectangle3D with points
    */
-  def apply (xmin:Double, ymin:Double, xmax:Double, ymax:Double, zmin:Double, zmax:Double): Rectangle3D =
-  {
-    new Rectangle3D(Point3D(xmin,ymin,zmin), Point3D(xmax,ymax,zmax))
+  def apply(xMin: Double,
+            yMin: Double,
+            zMin: Double,
+            xMax: Double,
+            yMax: Double,
+            zMax: Double): Rectangle3D = {
+    new Rectangle3D(Point3D(xMin, yMin, zMin), Point3D(xMax, yMax, zMax))
   }
 }
