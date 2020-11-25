@@ -6,7 +6,8 @@ package shapes
  * @param y y-coordinate
  * @param z z-coordinate
  */
-class Point3D private(val x: Double, val y: Double, val z: Double) {
+@SerialVersionUID(100L)
+class Point3D private(val x: Double, val y: Double, val z: Double) extends Serializable {
 
   /**
    * Given a point and a range, returns whether the distance between the point and the given point is within the range

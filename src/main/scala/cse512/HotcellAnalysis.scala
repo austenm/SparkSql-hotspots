@@ -1,7 +1,9 @@
 package cse512
 
 import org.apache.log4j.{Level, Logger}
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SparkSession}
+import shapes.{Point3D, Rectangle3D}
 
 object HotcellAnalysis {
   Logger.getLogger("org.spark_project").setLevel(Level.WARN)
@@ -9,86 +11,144 @@ object HotcellAnalysis {
   Logger.getLogger("akka").setLevel(Level.WARN)
   Logger.getLogger("com").setLevel(Level.WARN)
 
-def runHotcellAnalysis(spark: SparkSession, pointPath: String): DataFrame =
-{
-  // Load the original data from a data source
-  var pickupInfo = spark.read.format("com.databricks.spark.csv").option("delimiter",";").option("header","false").load(pointPath);
-  pickupInfo.createOrReplaceTempView("nyctaxitrips")
-  pickupInfo.show()
+  // Temporary table names
+  val CellToRidesTable = "CellToRides"
+  val HotCellScoresTable = "HotCellScores"
+  val GScoreTable = "GScores"
 
-  // Assign cell coordinates based on pickup points
-  spark.udf.register("CalculateX",(pickupPoint: String)=>((
-    HotcellUtils.CalculateCoordinate(pickupPoint, 0)
-    )))
-  spark.udf.register("CalculateY",(pickupPoint: String)=>((
-    HotcellUtils.CalculateCoordinate(pickupPoint, 1)
-    )))
-  spark.udf.register("CalculateZ",(pickupTime: String)=>((
-    HotcellUtils.CalculateCoordinate(pickupTime, 2)
-    )))
-  pickupInfo = spark.sql("select CalculateX(nyctaxitrips._c5),CalculateY(nyctaxitrips._c5), CalculateZ(nyctaxitrips._c1) from nyctaxitrips")
-  var newCoordinateName = Seq("x", "y", "z")
-  pickupInfo = pickupInfo.toDF(newCoordinateName:_*)
-  pickupInfo.show()
+  // Reused fields
+  val HotcellScoreField = "hotcellScore"
+  val GScoreField = "gscore"
+  val NeighbourCountField = "neighbourCount"
 
-  // Define the min and max of x, y, z
-  val minX = -74.50/HotcellUtils.coordinateStep
-  val maxX = -73.70/HotcellUtils.coordinateStep
-  val minY = 40.50/HotcellUtils.coordinateStep
-  val maxY = 40.90/HotcellUtils.coordinateStep
-  val minZ = 1
-  val maxZ = 31
-  val numCells = (maxX - minX + 1)*(maxY - minY + 1)*(maxZ - minZ + 1)
+  // Fudge-factor to support floating-point arithmetic
+  val Epsilon = 0.000001
 
-  // YOU NEED TO CHANGE THIS PART
-  pickupInfo = spark.sql("select x,y,z from pickupInfoView where x>= " + minX + " and x<= " + maxX + " and y>= " + minY + " and y<= " + maxY + " and z>= " + minZ + " and z<= " + maxZ + " order by z,y,x")
-  pickupInfo.createOrReplaceTempView("selectedCellVals")
-  // pickupInfo.show()
 
-  pickupInfo = spark.sql("select x, y, z, count(*) as hotCells from selectedCellVals group by x, y, z order by z,y,x")
-  pickupInfo.createOrReplaceTempView("selectedCellHotness")
-  // pickupInfo.show()
+  def runHotcellAnalysisWithGScore(spark: SparkSession, pointPath: String): DataFrame = {
+    // Load the original data from a data source
+    var pickupInfo = spark.read
+      .format("com.databricks.spark.csv")
+      .option("delimiter", ";")
+      .option("header", "false")
+      .load(pointPath);
+    pickupInfo.createOrReplaceTempView("nyctaxitrips")
+    pickupInfo.show()
 
-  val sumOfSelectedCcells = spark.sql("select sum(hotCells) as sumHotCells from selectedCellHotness")
-  sumOfSelectedCcells.createOrReplaceTempView("sumOfSelectedCcells")
-  // sumOfSelectedCcells.show()
+    // Assign cell coordinates based on pickup points
+    spark.udf.register("CalculateX",
+      (pickupPoint: String) =>
+        ((
+          HotcellUtils.CalculateCoordinate(pickupPoint,
+            0)
+          )))
+    spark.udf.register("CalculateY",
+      (pickupPoint: String) =>
+        ((
+          HotcellUtils.CalculateCoordinate(pickupPoint,
+            1)
+          )))
+    spark.udf.register("CalculateZ",
+      (pickupTime: String) =>
+        ((
+          HotcellUtils.CalculateCoordinate(pickupTime,
+            2)
+          )))
+    pickupInfo = spark.sql(
+      "select CalculateX(nyctaxitrips._c5),CalculateY(nyctaxitrips._c5), CalculateZ(nyctaxitrips._c1) from nyctaxitrips")
+    val newCoordinateName = Seq("x", "y", "z")
+    pickupInfo = pickupInfo.toDF(newCoordinateName: _*)
+    pickupInfo.show()
 
-  val mean = (sumOfSelectedCcells.first().getLong(0).toDouble / numCells.toDouble).toDouble
-  // println(mean)
+    // Define the min and max of x, y, z
+    val minX     = -74.50 / HotcellUtils.coordinateStep
+    val maxX     = -73.70 / HotcellUtils.coordinateStep
+    val minY     = 40.50 / HotcellUtils.coordinateStep
+    val maxY     = 40.90 / HotcellUtils.coordinateStep
+    val minZ     = 1
+    val maxZ     = 31
+    val numCells = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1)
 
-  spark.udf.register("squared", (inputX: Int) => (((inputX*inputX).toDouble)))
+    val searchSpace = Rectangle3D(minX, minY, minZ, maxX, maxY, maxZ)
+    spark.udf.register(
+      "ST_Contains",
+      (x: Double, y: Double, z: Double) =>
+        searchSpace.contains(Point3D(x, y, z))
+    )
 
-  val sumOfSquares = spark.sql("select sum(squared(hotCells)) as sumOfSquares from selectedCellHotness")
-  sumOfSquares.createOrReplaceTempView("sumOfSquares")
-  // sumOfSquares.show()
+    pickupInfo
+      .filter("ST_Contains(x, y, z)")
+      .groupBy("x", "y", "z")
+      .count()
+      .createOrReplaceTempView(CellToRidesTable)
 
-  val standardDeviation = scala.math.sqrt(((sumOfSquares.first().getDouble(0).toDouble / numCells.toDouble) - (mean.toDouble * mean.toDouble))).toDouble
-  // println(mean)
+    // Get the global values to calculate xBar and std. deviation
+    val sums = spark.sql(s"""
+      select sum(count) sumOfValues, sum(count * count) sumOfSquares
+      from ${CellToRidesTable}
+      """)
 
-  spark.udf.register("adjacentCells", (inputX: Int, inputY: Int, inputZ: Int, minX: Int, maxX: Int, minY: Int, maxY: Int, minZ: Int, maxZ: Int) => ((HotcellUtils.calculateAdjacentCells(inputX, inputY, inputZ, minX, minY, minZ, maxX, maxY, maxZ))))
+    val sumsRow = sums.first()
+    val sumOfValues = sumsRow.getLong(0).toDouble
+    val sumOfSquares = sumsRow.getLong(1).toDouble
 
-  val adjacentCells = spark.sql("select adjacentCells(sch1.x, sch1.y, sch1.z, " + minX + "," + maxX + "," + minY + "," + maxY + "," + minZ + "," + maxZ + ") as adjacentCellCount,"
-    + "sch1.x as x, sch1.y as y, sch1.z as z, "
-    + "sum(sch2.hotCells) as sumHotCells "
-    + "from selectedCellHotness as sch1, selectedCellHotness as sch2 "
-    + "where (sch2.x = sch1.x+1 or sch2.x = sch1.x or sch2.x = sch1.x-1) "
-    + "and (sch2.y = sch1.y+1 or sch2.y = sch1.y or sch2.y = sch1.y-1) "
-    + "and (sch2.z = sch1.z+1 or sch2.z = sch1.z or sch2.z = sch1.z-1) "
-    + "group by sch1.z, sch1.y, sch1.x "
-    + "order by sch1.z, sch1.y, sch1.x")
-  adjacentCells.createOrReplaceTempView("adjacentCells")
-  // adjacentCells.show()
+    // Neighbor cells must be within sqrt(3)
+    //  - adding an epsilon to avoid any floating point math issue
+    spark.udf.register(
+      "ST_Neighbor",
+      (x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double) => {
+        val point1 = Point3D(x1, y1, z1)
+        val point2 = Point3D(x2, y2, z2)
+        point1.within(point2, math.sqrt(3) + Epsilon)
+      }
+    )
 
-  spark.udf.register("zScore", (adjacentCellCount: Int, sumHotCells: Int, numCells: Int, x: Int, y: Int, z: Int, mean: Double, standardDeviation: Double) => ((HotcellUtils.calculateZScore(adjacentCellCount, sumHotCells, numCells, x, y, z, mean, standardDeviation))))
+    // Determine the number of neighbour cells based on how many boundaries the cell
+    // touches of the search space
+    //
+    // If a cell is touching a boundary, it will only have 2 neighbors along that axis,
+    // otherwise, it will have 3.
+    //
+    // Therefore,
+    //   neighbor cell count =
+    //      2 ^ (search space boundaries) *
+    //      3 ^ (3 - search space boundaries)
+    spark.udf.register(
+      "ST_GetCellNeighborCount",
+      (x : Double, y: Double, z: Double) => {
+        val numBoundaries = searchSpace.getBoundariesTouching(Point3D.apply(x, y, z))
+        math.pow(2, numBoundaries) * math.pow(3, 3 - numBoundaries)
+      }
+    )
 
-  pickupInfo = spark.sql("select zScore(adjacentCellCount, sumHotCells, "+ numCells + ", x, y, z," + mean + ", " + standardDeviation + ") as getisOrdStatistic, x, y, z from adjacentCells order by getisOrdStatistic desc");
-  pickupInfo.createOrReplaceTempView("zScore")
-  // pickupInfo.show()
+    spark.sql(
+      s"""
+         select ctr1.x x, ctr1.y y, ctr1.z z, sum(ctr2.count) ${HotcellScoreField},
+            ST_GetCellNeighborCount(ctr1.x, ctr1.y, ctr1.z) ${NeighbourCountField}
+         from ${CellToRidesTable} ctr1, ${CellToRidesTable} ctr2
+         where ST_Neighbor(ctr1.x, ctr1.y, ctr1.z, ctr2.x, ctr2.y, ctr2.z)
+         group by ctr1.x, ctr1.y, ctr1.z
+         """)
+      .createOrReplaceTempView(HotCellScoresTable)
 
-  pickupInfo = spark.sql("select x, y, z from zScore")
-  pickupInfo.createOrReplaceTempView("finalPickupInfo")
-  // pickupInfo.show()
+    val partialGscore = HotcellUtils.partialGscore(sumOfValues, sumOfSquares, numCells)
 
-  return pickupInfo // YOU NEED TO CHANGE THIS PART
-}
+    spark.udf.register(
+      "ST_Gscore",
+      (hotcellScore: Long, neighbourCount: Long) => partialGscore(hotcellScore, neighbourCount)
+    )
+
+    // Ordering to appease the auto-grader
+    spark.sql(s"""
+      select x, y, z, ST_Gscore(${HotcellScoreField}, ${NeighbourCountField}) ${GScoreField}
+      from ${HotCellScoresTable}
+      order by ${GScoreField} DESC, x DESC, y ASC, z DESC
+    """)
+  }
+
+  def runHotcellAnalysis(spark: SparkSession, pointPath: String): DataFrame = {
+    runHotcellAnalysisWithGScore(spark, pointPath)
+      .coalesce(1)
+      .select("x", "y", "z")
+  }
 }

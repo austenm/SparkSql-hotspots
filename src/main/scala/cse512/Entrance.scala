@@ -12,8 +12,8 @@ object Entrance extends App {
   override def main(args: Array[String]) {
     val spark = SparkSession
       .builder()
-      .appName("CSE512-HotspotAnalysis-MYGROUPNAME")
-      .config("spark.some.config.option", "some-value").master("local[*]")
+      .appName("CSE512-HotspotAnalysis-Team24")
+      .config("spark.some.config.option", "some-value")
       .getOrCreate()
 
     paramsParser(spark, args)
