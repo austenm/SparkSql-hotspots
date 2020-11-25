@@ -22,6 +22,25 @@ class Rectangle3D private(val minpoint: Point3D, val maxpoint: Point3D) extends 
      point.z <= maxpoint.z
   }
 
+  /**
+   * Given a Point3D, determines the number of coordinate boundaries the Point3D is touching
+   * @param point {@type Point3D} to test
+   * @return number of coordinate boundaries the point is touching
+   */
+  def getBoundariesTouching(point: Point3D): Int = {
+    var numberOfBoundaries = 0
+    if (Seq(minpoint.x, maxpoint.x).contains(point.x)) {
+      numberOfBoundaries += 1
+    }
+    if (Seq(minpoint.y, maxpoint.y).contains(point.y)) {
+      numberOfBoundaries += 1
+    }
+    if (Seq(minpoint.z, maxpoint.z).contains(point.z)) {
+      numberOfBoundaries += 1
+    }
+    numberOfBoundaries
+  }
+
   // auto-generated
   def canEqual(other: Any): Boolean = other.isInstanceOf[Rectangle3D]
 

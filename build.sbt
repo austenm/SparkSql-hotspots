@@ -13,7 +13,7 @@ lazy val root = (project in file(".")).
 
     publishMavenStyle := true,
 
-    mainClass := Some("cse512.SparkSQLExample")
+    mainClass := Some("cse512.Entrance")
   )
 
 libraryDependencies ++= Seq(

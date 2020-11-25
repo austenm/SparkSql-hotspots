@@ -47,4 +47,17 @@ class Rectangle3DTest extends FunSuite {
     assert(!rectangle.contains(Point3D(1, 2.5, 1)))
     assert(!rectangle.contains(Point3D(2.5, 1, 1)))
   }
+
+  test("boundaries touching returns correct number of boundaries") {
+    val rectangle = Rectangle3D.apply(1, 1, 1, 2, 2, 2)
+    rectangle.getBoundariesTouching(Point3D(1.5, 1.5, 1.5)) shouldEqual 0
+    rectangle.getBoundariesTouching(Point3D(1, 1.5, 1.5)) shouldEqual 1
+    rectangle.getBoundariesTouching(Point3D(1.5, 1, 1.5)) shouldEqual 1
+    rectangle.getBoundariesTouching(Point3D(1.5, 1.5, 1)) shouldEqual 1
+    rectangle.getBoundariesTouching(Point3D(2, 1.5, 1.5)) shouldEqual 1
+    rectangle.getBoundariesTouching(Point3D(1.5, 2, 1.5)) shouldEqual 1
+    rectangle.getBoundariesTouching(Point3D(1.5, 1.5, 2)) shouldEqual 1
+    rectangle.getBoundariesTouching(Point3D(1.5, 2, 2)) shouldEqual 2
+    rectangle.getBoundariesTouching(Point3D(2, 2, 2)) shouldEqual 3
+  }
 }
