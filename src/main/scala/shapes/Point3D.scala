@@ -38,6 +38,8 @@ class Point3D private(val x: Double, val y: Double, val z: Double) {
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 
+  // Auto-generated
+  override def toString = s"Point3D($x, $y, $z)"
 }
 /**
  * Companion object used for utility functions

@@ -36,6 +36,8 @@ class Point2D private(val x: Double, val y: Double) {
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 
+  // Auto-generated
+  override def toString = s"Point2D($x, $y)"
 }
 /**
  * Companion object used for utility functions
