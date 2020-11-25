@@ -2,8 +2,8 @@ package cse512
 
 
 import org.apache.spark.sql.SparkSession
-import shapes.Rectangle
-import shapes.Point
+import shapes.Rectangle2D
+import shapes.Point2D
 
 object SpatialQuery extends App {
   def runRangeQuery(spark: SparkSession, arg1: String, arg2: String): Long = {
@@ -11,7 +11,7 @@ object SpatialQuery extends App {
     val pointDf = spark.read.format("com.databricks.spark.csv").option("delimiter", "\t").option("header", "false").load(arg1);
     pointDf.createOrReplaceTempView("point")
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
-    spark.udf.register("ST_Contains", (queryRectangle: String, pointString: String) => Rectangle.fromString(queryRectangle).contains(Point.fromString(pointString)))
+    spark.udf.register("ST_Contains", (queryRectangle: String, pointString: String) => Rectangle2D.fromString(queryRectangle).contains(Point2D.fromString(pointString)))
     val resultDf = spark.sql("select * from point where ST_Contains('" + arg2 + "',point._c0)")
     resultDf.show()
     return resultDf.count()
@@ -26,7 +26,7 @@ object SpatialQuery extends App {
     rectangleDf.createOrReplaceTempView("rectangle")
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
-    spark.udf.register("ST_Contains", (queryRectangle: String, pointString: String) => Rectangle.fromString(queryRectangle).contains(Point.fromString(pointString)))
+    spark.udf.register("ST_Contains", (queryRectangle: String, pointString: String) => Rectangle2D.fromString(queryRectangle).contains(Point2D.fromString(pointString)))
 
     val resultDf = spark.sql("select * from rectangle,point where ST_Contains(rectangle._c0,point._c0)")
     resultDf.show()
@@ -40,7 +40,7 @@ object SpatialQuery extends App {
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
     spark.udf.register("ST_Within", (pointString1: String, pointString2: String, distance: Double) =>
-      Point.fromString(pointString1).within(Point.fromString(pointString2), distance))
+      Point2D.fromString(pointString1).within(Point2D.fromString(pointString2), distance))
 
     val resultDf = spark.sql("select * from point where ST_Within(point._c0,'" + arg2 + "'," + arg3 + ")")
     resultDf.show()
@@ -57,7 +57,7 @@ object SpatialQuery extends App {
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
     spark.udf.register("ST_Within", (pointString1: String, pointString2: String, distance: Double) =>
-      Point.fromString(pointString1).within(Point.fromString(pointString2), distance))
+      Point2D.fromString(pointString1).within(Point2D.fromString(pointString2), distance))
     val resultDf = spark.sql("select * from point1 p1, point2 p2 where ST_Within(p1._c0, p2._c0, " + arg3 + ")")
     resultDf.show()
     return resultDf.count()

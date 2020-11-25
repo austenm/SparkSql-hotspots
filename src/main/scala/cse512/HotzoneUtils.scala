@@ -1,6 +1,6 @@
 package cse512
 
-import shapes.{Point, Rectangle}
+import shapes.{Point2D, Rectangle2D}
 
 object HotzoneUtils {
 
@@ -10,7 +10,7 @@ object HotzoneUtils {
    * @return boolean representing if the point is within the rectangle
    */
   def ST_Contains(queryRectangle: String, pointString: String ) : Boolean = {
-    Rectangle.fromString(queryRectangle).contains(Point.fromString(pointString))
+    Rectangle2D.fromString(queryRectangle).contains(Point2D.fromString(pointString))
   }
 
 
