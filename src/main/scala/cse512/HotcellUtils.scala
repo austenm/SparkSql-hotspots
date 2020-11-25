@@ -54,7 +54,7 @@ object HotcellUtils {
    * @param sumOfValues sum of all cells
    * @param sumOfSquares sum of squares of all cells
    * @param numCells total number of cells
-   * @return proatial function to calculate g-score
+   * @return partial function to calculate g-score
    */
   def partialGscore(sumOfValues: Double,
                     sumOfSquares: Double,
