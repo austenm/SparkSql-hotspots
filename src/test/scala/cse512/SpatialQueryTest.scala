@@ -1,7 +1,7 @@
 package cse512
 
 import org.apache.spark.sql.SparkSession
-import org.scalatest.FunSuite
+import org.scalatest.{DoNotDiscover, FunSuite}
 import org.specs2.matcher.ShouldMatchers.thisValue
 
 object SpatialQueryTest {
@@ -12,6 +12,7 @@ object SpatialQueryTest {
     .getOrCreate()
 }
 
+@DoNotDiscover
 class SpatialQueryTest extends FunSuite {
   test("range query where point is contained in rectangle") {
     val count = SpatialQuery.runRangeQuery(
