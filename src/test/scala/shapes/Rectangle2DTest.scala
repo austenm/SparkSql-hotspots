@@ -13,7 +13,7 @@ class Rectangle2DTest extends FunSuite {
     }
   }
 
-  test("throws InvalidArgumentException if points string contains non-multiple of 5 points") {
+  test("throws InvalidArgumentException if points string contains more than 4 points") {
     try {
       Rectangle2D.fromString("1.345,-2.345,1.567,-3.4567,1")
     } catch {
